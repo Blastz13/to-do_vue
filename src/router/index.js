@@ -1,25 +1,50 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import TaskDetailView from '@/views/TaskDetailView.vue'
+import LoginView from "@/views/LoginView";
+import SignUpView from "@/views/SignUpView";
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('@/views/HomeView.vue'),
+    meta: {auth: true}
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/task/:id',
+    name: 'taskDetail',
+    component: TaskDetailView,
+    meta: {auth: true}
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    meta: {auth: false}
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignUpView,
+    meta: {auth: false}
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const requireAuth = to.matched.some(record => record.meta.auth);
+  if (requireAuth && !localStorage.getItem("token")){
+    next("/login")
+  }
+  else if((to.name == "login" || to.name == "signup") && localStorage.getItem("token")){
+    next(from)
+  }else{
+    next()
+  }
 })
 
 export default router
