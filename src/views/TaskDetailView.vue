@@ -23,20 +23,19 @@ export default {
   },
   methods: {
     async fetchListTasks() {
-      const response = await axios.get('http://127.0.0.1:8000/task/' + this.$route.params.id,
-                               {headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
-      this.task = response.data;
+      const response = await axios.get('http://127.0.0.1:8000/contact/' + this.$route.params.id);
+      // this.task = response.data["todo"];
+      this.task = response.data
     },
 
     async updateTask() {
-      const response = await axios.put('http://127.0.0.1:8000/task/update/' + this.$route.params.id,
-          {"title": this.task.title, "description": this.task.description},
-          {headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
+      console.log('UPDATE')
+      const response = await axios.put(`http://127.0.0.1:8000/contact/${this.$route.params.id}/`, {'name': this.task.name, 'phone': this.task.phone});
+      console.log(response.data)
     },
 
     async deleteTask() {
-      const response = await axios.delete('http://127.0.0.1:8000/task/remove/' + this.$route.params.id,
-                                  {headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
+      const response = await axios.delete('http://127.0.0.1:8000/contact/' + this.$route.params.id);
     }
   },
   mounted() {

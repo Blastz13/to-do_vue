@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="to_do__wrapper">
-      <h1>To-Do List</h1>
+      <h1>Contact List</h1>
       <div class="action__btns" style="">
         <my-button @click="isDialogVisible = true;">Add</my-button>
         <my-button @click="logout" style="background: red;">Logout</my-button>
@@ -37,13 +37,14 @@ export default {
   },
   methods: {
     async fetchListTasks() {
-      const response = await axios.get('http://127.0.0.1:8000/task?order_by=create_date', {headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
+      const response = await axios.get('http://127.0.0.1:8000/contact');
       this.tasks = response.data;
     },
     async createTask(task){
       this.isDialogVisible = false;
+      console.log(task);
       if (!task.title.isEmpty && !task.description.isEmpty){
-        await axios.post('http://127.0.0.1:8000/task/', {"title": task.title, "description": task.description},{headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
+        await axios.post(`http://127.0.0.1:8000/contact/`, {'name': task.name, 'phone': task.phone});
         await this.fetchListTasks();
       }
     },
@@ -54,7 +55,8 @@ export default {
   },
   computed: {
     searchedTasks() {
-      return this.tasks.filter(task => task.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
+      return this.tasks.filter(task => task.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+      // return this.tasks
     }
   },
   created() {
