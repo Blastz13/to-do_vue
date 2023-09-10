@@ -1,20 +1,18 @@
 <template>
 <div class="item">
   <div class="item__info">
-<!--    {{ this.item }}-->
-    <router-link :to="{ name: 'taskDetail', params: { id: item.id }}"><div class="item__title" :class="{title_strike: this.item.completed == 'true'}"><p>{{ item.name }}</p></div></router-link>
-<!--    <div class="item__description"><p>{{ item.name }}</p></div>-->
-    <div class="item__description"><p>{{ item.phone }}</p></div>
-<!--    <div class="item__date"><p>{{ getBeautifulDate(item.create_date) }}</p></div>-->
+    <router-link :to="{ name: 'taskDetail', params: { id: item.id }}"><div class="item__title" :class="{title_strike: this.item.current_status == 'Выполнено'}"><p>{{ item.title }}</p></div></router-link>
+    <div class="item__description"><p>{{ item.description }}</p></div>
+    <div class="item__date"><p>{{ getBeautifulDate(item.create_date) }}</p></div>
   </div>
-<!--  <div class="item__status">-->
-<!--    <input type="checkbox"-->
-<!--           class="item__status__task"-->
-<!--           v-model="this.item.completed"-->
-<!--           true-value=true-->
-<!--           false-value=false-->
-<!--           @change="updateStatusTask()">-->
-<!--  </div>-->
+  <div class="item__status">
+    <input type="checkbox"
+           class="item__status__task"
+           v-model="this.item.current_status"
+           true-value="Выполнено"
+           false-value="Не выполнено"
+           @change="updateStatusTask()">
+  </div>
 </div>
 </template>
 
@@ -31,7 +29,7 @@ export default {
   },
   methods: {
     async updateStatusTask() {
-      await axios.patch(`http://127.0.0.1:8000/${this.item.id}?name=${this.item.name}&completed=${this.item.completed}`);
+      await axios.put('http://127.0.0.1:8000/task/update-status/' + this.item.id, {"status": this.item.current_status},{headers: {Authorization: `Bearer ${this.$store.getters.getToken}`}});
     },
     getBeautifulDate(date) {
       return moment(date).format("MMMM Do YYYY, h:mm:ss a");
